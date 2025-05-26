@@ -1,3 +1,9 @@
-self.addEventListener('fetch', function(event) {
-  // Do nothing special yet
+self.addEventListener('install', event => {
+  event.waitUntil(self.skipWaiting());
 });
+
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', () => {});

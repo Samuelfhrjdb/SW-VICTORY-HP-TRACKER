@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <div style="margin: 20px 0;">
+  <label for="faction-select">Select Your Faction:</label><br>
+  <select id="faction-select" onchange="setFaction()" style="margin-top: 10px; font-size: 16px; padding: 5px;">
+    <option value="">-- Choose a Side --</option>
+    <option value="empire">Galactic Empire</option>
+    <option value="rebels">Rebel Alliance</option>
+  </select>
+</div>
+<h2 id="faction-display" style="margin-bottom: 30px;"></h2>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lego Unit HP Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/aurebesh" rel="stylesheet">
+
+  <style>
+  #faction-display {
+  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+  letter-spacing: 0.15em;
+}
+
+}
+
+    .aurebesh {
+  font-family: 'Aurebesh', sans-serif;
+  font-size: 14px;
+  margin-top: 5px;
+  color: #888;
+}
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .unit {
+      background: #222;
+      border: 2px solid #444;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 10px;
+      display: inline-block;
+      width: 200px;
+    }
+    .unit h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  text-shadow: 0 0 #fff, 0 0 8px #aaa; /* Cyan glow */
+    }
+
+    .hp {
+      font-size: 24px;
+      margin: 10px 0;
+      color: #fff;
+    }
+    .low-hp {
+      animation: pulse 1.5s infinite;
+      color: #b00020 !important;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    button {
+      padding: 5px 10px;
+      font-size: 16px;
+      margin: 0 5px;
+      background-color: #444;
+      color: #fff;
+      border: 2px solid #666;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>SQUADRON HP TRACKER</h1>
+
+  <div id="units"></div>
+
+  <script>
+    function setFaction() {
+  const select = document.getElementById("faction-select");
+  const faction = select.value;
+  const display = document.getElementById("faction-display");
+
+  if (faction === "empire") {
+    display.textContent = "LONG LIVE THE EMPIRE!";
+    display.style.color = "crimson";
+  } else if (faction === "rebels") {
+    display.textContent = "FOR THE REBELLION!";
+    display.style.color = "skyblue";
+  } else {
+    display.textContent = "";
+  }
+}
+
+    const units = [
+      { name: "Assault 1", hp: 3, baseHp: 3 },
+      { name: "Assault 2", hp: 3, baseHp: 3 },
+      { name: "Heavy", hp: 4, baseHp: 4 },
+      { name: "Specialist", hp: 3, baseHp: 3 },
+      { name: "Support", hp: 2, baseHp: 2 },
+      { name: "Vehicle", hp: 5, baseHp: 5 },
+    ];
+
+    const unitsDiv = document.getElementById('units');
+
+    function getAurebeshLabel(name) {
+  if (name.startsWith("Assault")) return "ASSAULT";
+  return name.toUpperCase();
+}
+
+
+    function renderUnits() {
+      unitsDiv.innerHTML = '';
+      units.forEach((unit, index) => {
+        const unitDiv = document.createElement('div');
+        unitDiv.className = 'unit';
+        unitDiv.innerHTML = `
+          <h3>${unit.name}</h3>
+          <div class="aurebesh">${getAurebeshLabel(unit.name)}</div>
+          <div class="hp" id="hp-container-${index}">HP: <span id="hp-${index}">${unit.hp}</span></div>
+          <button onclick="changeHP(${index}, -1)">-</button>
+          <button onclick="changeHP(${index}, 1)">+</button>
+        `;
+        unitsDiv.appendChild(unitDiv);
+      });
+    }
+
+    function changeHP(index, amount) {
+      const unit = units[index];
+      unit.hp = Math.max(Math.min(unit.hp + amount, unit.baseHp), 0);
+      const hpSpan = document.getElementById(`hp-${index}`);
+      hpSpan.textContent = unit.hp;
+      const hpContainer = document.getElementById(`hp-container-${index}`);
+      if (unit.hp <= 1) {
+        hpContainer.classList.add('low-hp');
+      } else {
+        hpContainer.classList.remove('low-hp');
+      }
+    }
+
+    renderUnits();
+  </script>
+</body>
+</html>
