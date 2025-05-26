@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
   <div style="margin: 20px 0;">
   <label for="faction-select">Select Your Faction:</label><br>
   <select id="faction-select" onchange="setFaction()" style="margin-top: 10px; font-size: 16px; padding: 5px;">
@@ -17,11 +19,20 @@
   <link href="https://fonts.cdnfonts.com/css/aurebesh" rel="stylesheet">
 
   <style>
+ #faction-select {
+  background: #222;
+  border: 2px solid #444;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px auto;
+  width: 200px;
+  display: inline-block;
+  color: #fff; 
+}
+
   #faction-display {
   text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
   letter-spacing: 0.15em;
-}
-
 }
 
     .aurebesh {
@@ -139,19 +150,52 @@
     }
 
     function changeHP(index, amount) {
-      const unit = units[index];
-      unit.hp = Math.max(Math.min(unit.hp + amount, unit.baseHp), 0);
-      const hpSpan = document.getElementById(`hp-${index}`);
-      hpSpan.textContent = unit.hp;
-      const hpContainer = document.getElementById(`hp-container-${index}`);
-      if (unit.hp <= 1) {
-        hpContainer.classList.add('low-hp');
-      } else {
-        hpContainer.classList.remove('low-hp');
-      }
-    }
+  const unit = units[index];
+  unit.hp = Math.max(Math.min(unit.hp + amount, unit.baseHp), 0);
+  const hpSpan = document.getElementById(`hp-${index}`);
+  hpSpan.textContent = unit.hp;
+  const hpContainer = document.getElementById(`hp-container-${index}`);
 
-    renderUnits();
+  if (unit.hp === 1) {
+    hpContainer.classList.add('low-hp', 'pulsing');
+  } else if (unit.hp === 0) {
+    hpContainer.classList.add('low-hp');
+    hpContainer.classList.remove('pulsing');
+  } else {
+    hpContainer.classList.remove('low-hp', 'pulsing');
+  }
+}
+  if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(reg => console.log('Service Worker registered!'))
+    .catch(err => console.error('Service Worker failed:', err));
+}
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); // Prevent the automatic prompt
+    deferredPrompt = e;
+    // Show your own install button or prompt here, for example:
+    const installBtn = document.createElement('button');
+    installBtn.textContent = 'Install App';
+    installBtn.style.fontSize = '18px';
+    installBtn.style.padding = '10px 20px';
+    installBtn.style.marginTop = '20px';
+    document.body.appendChild(installBtn);
+
+    installBtn.addEventListener('click', () => {
+      deferredPrompt.prompt(); // Show the prompt
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+        installBtn.remove();
+      });
+    });
+  });
   </script>
 </body>
 </html>
